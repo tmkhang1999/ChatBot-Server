@@ -1,0 +1,12 @@
+langchain~=0.0.323
+openai
+langchainhub
+tiktoken
+streamlit
+pypdf
+beautifulsoup4
+faiss-cpu
+pyaml_env
+uvicorn~=0.23.2
+fastapi~=0.104.1
+pydantic~=2.4.2

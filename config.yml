@@ -1,0 +1,11 @@
+# All the variables should be queried from .env file
+log_level: "DEBUG"
+openai_api_key: !ENV ${OPENAI_API_KEY}
+app:
+  host: "0.0.0.0"
+  port: "8000"
+#database:
+#  user: !ENV ${MYSQL_USER}
+#  password: !ENV ${MYSQL_PASSWORD}
+#  host: !ENV ${MYSQL_HOST}
+#  database: !ENV ${MYSQL_DATABASE}
