@@ -1,8 +1,10 @@
 import logging
 from os import path
 from pyaml_env import parse_config
+from dotenv import load_dotenv
 
 log = logging.getLogger(__name__)
+load_dotenv()
 
 
 class ConfigManager:
