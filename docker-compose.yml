@@ -1,0 +1,47 @@
+version: "3"
+services:
+  fastapi-app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+    image: chatbot:latest
+    container_name: chatbot
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "8080:8000"
+    depends_on:
+      - mariadb
+#    networks:
+#      - fastapi-network
+    restart: unless-stopped
+    command: uvicorn app:app --host 0.0.0.0 --port 8000
+    volumes:
+      - ./config.yml:/app/config.yml
+      - ./logs:/app/logs/  # Specify a volume for FastAPI logs
+
+  mariadb:
+    image: mariadb:latest
+    container_name: chatbot-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+#    networks:
+#      - fastapi-network
+    restart: unless-stopped
+    volumes:
+      - ./mariadb-config:/etc/mysql  # Specify a volume for MariaDB configuration
+      - ./mariadb-logs:/var/log/mysql  # Specify a volume for MariaDB logs
+
+#networks:
+#  fastapi-network:
+
