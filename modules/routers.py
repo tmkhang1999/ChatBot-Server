@@ -35,6 +35,6 @@ async def load_history(conversation_id: str):
 
 @chat_router.post("/save/{conversation_id}")
 async def save_history(conversation_id: str):
-    chat_response.save_history(conversation_id)
+    await chat_response.save_memory_to_database(conversation_id)
     return JSONResponse(status_code=200,
                         content={"message": "Conversation history saved successfully"})
