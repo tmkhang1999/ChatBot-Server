@@ -1,10 +1,12 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from modules.routers import chat_router
+from modules.routers import trial_router, user_router, chat_router
 from utils.settings import config_manager
 from starlette.responses import JSONResponse
 
 app = FastAPI()
+app.include_router(trial_router, tags=["trial"])
+app.include_router(user_router, tags=["user"])
 app.include_router(chat_router, tags=["chat"])
 
 
