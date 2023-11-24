@@ -17,8 +17,6 @@ services:
       - "8080:8000"
     depends_on:
       - mariadb
-#    networks:
-#      - fastapi-network
     restart: unless-stopped
     command: uvicorn app:app --host 0.0.0.0 --port 8000
     volumes:
@@ -35,13 +33,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
-#    networks:
-#      - fastapi-network
     restart: unless-stopped
     volumes:
       - ./mariadb-config:/etc/mysql  # Specify a volume for MariaDB configuration
       - ./mariadb-logs:/var/log/mysql  # Specify a volume for MariaDB logs
-
-#networks:
-#  fastapi-network:
-
