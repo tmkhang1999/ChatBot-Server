@@ -108,7 +108,10 @@ class TrialConversationChain(StreamingConversationChain):
         """
         destination_chains: Dict[str, LLMChain] = {}
         for p_info in prompt_factory.prompt_infos:
-            chain = LLMChain(llm=chat_model, prompt=p_info['prompt'], memory=memory)
+            chain = LLMChain(
+                llm=chat_model,
+                prompt=p_info['prompt'],
+                memory=memory)
             destination_chains[p_info['name']] = chain
 
         default_chain = LLMChain(

@@ -36,19 +36,19 @@ async def generate_response(data: ChatRequest) -> StreamingResponse:
     )
 
 
-@chat_router.get("/load_history/{conversation_id}")
+@chat_router.get("/load_history")
 async def load_history(conversation_id: str):
-    retrieved_history = base_chain.load_history(conversation_id)
+    retrieved_history = await base_chain.load_history(conversation_id)
     if retrieved_history is not None:
         return JSONResponse(status_code=200,
                             content={"message": "Conversation history loaded successfully",
                                      "history": retrieved_history})
     else:
         raise HTTPException(status_code=404,
-                            detail="Conversation history not found")
+                            detail=f"Conversation history with ID {conversation_id} not found")
 
 
-@chat_router.post("/save_history/{conversation_id}")
+@chat_router.post("/save_history")
 async def save_history(conversation_id: str):
     await base_chain.save_history(conversation_id)
     return JSONResponse(status_code=200,

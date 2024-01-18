@@ -175,7 +175,7 @@ class StreamingConversationChain:
             return json.dumps(ingest_to_db)
 
         # If the memory is not in the cache, so attempt to retrieve it from the database
-        retrieve_from_db = await database.get_history(conversation_id)
+        retrieve_from_db = database.get_history(conversation_id)
 
         # If the memory is not found in the database, log a warning and return None
         if not retrieve_from_db:
@@ -183,7 +183,7 @@ class StreamingConversationChain:
             return None
 
         # Parse the retrieved memory from JSON and create a ConversationBufferMemory
-        retrieved_messages = messages_from_dict(json.loads(retrieve_from_db["memory"]))
+        retrieved_messages = messages_from_dict(json.loads(retrieve_from_db))
         retrieved_chat_history = ChatMessageHistory(messages=retrieved_messages)
         retrieved_memory = ConversationBufferMemory(
             chat_memory=retrieved_chat_history,
@@ -194,4 +194,4 @@ class StreamingConversationChain:
         # Add the retrieved memory_info to the cache
         memory_info = {"memory": retrieved_memory, "last_used_time": datetime.now()}
         self.memories[conversation_id] = memory_info
-        return retrieve_from_db["memory"]
+        return retrieve_from_db
