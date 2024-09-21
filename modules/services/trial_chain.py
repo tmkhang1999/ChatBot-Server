@@ -5,7 +5,6 @@ from typing import AsyncIterator, Dict, Tuple, List
 from langchain.callbacks import AsyncIteratorCallbackHandler
 from langchain.chains import ConversationChain
 from langchain.chains.llm import LLMChain
-from langchain.chat_models import ChatOpenAI
 from langchain.chains.router.llm_router import LLMRouterChain, RouterOutputParser
 from langchain.chains.router import MultiPromptChain
 from langchain.chains.router.multi_prompt_prompt import MULTI_PROMPT_ROUTER_TEMPLATE
