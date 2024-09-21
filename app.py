@@ -1,12 +1,13 @@
+import os
+
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from modules.routers import trial_router, user_router, chat_router
+from modules.routers import trial_router, chat_router
 from utils.settings import config_manager
-from starlette.responses import JSONResponse
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 app.include_router(trial_router, tags=["trial"])
-app.include_router(user_router, tags=["user"])
 app.include_router(chat_router, tags=["chat"])
 
 
@@ -22,5 +23,6 @@ async def healthcheck():
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
+    os.environ["OPENAI_API_KEY"] = config_manager.get("openai")["api_key"]
     app_info = config_manager.get("app")
     uvicorn.run(app, host=app_info["host"], port=int(app_info["port"]))

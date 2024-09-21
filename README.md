@@ -44,13 +44,8 @@ Planning and executing events can be challenging, especially for those without e
 - AI-suggested services based on event parameters.
 
 ## API Endpoints<a name="endpoints"></a>
+https://documenter.getpostman.com/view/17922672/2s9YkkdhMY
 
-| Endpoint                  | Description                                         |
-|---------------------------|-----------------------------------------------------|
-| `/chat`                   | Handles event-related chat interactions.            |
-| `/load/{conversation_id}` | Retrieves chat history based on conversation ID.    |
-| `/save/{conversation_id}` | Saves current conversation history to the database. |
-| `/generate_img`           | Generate images based the provided content.         |
 ## Getting Started<a name="start"></a>
 
 1. Clone the repository.

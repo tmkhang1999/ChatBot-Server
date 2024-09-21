@@ -1,39 +1,44 @@
-version: "3"
+version: "1"
 services:
-  fastapi-app:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-    image: chatbot:latest
-    container_name: chatbot
+  ai-app:
+    image: tmkhang1999/planz-ai-server:latest
+    container_name: ai-app
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
 
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+      PLANZ_HOST: ${PLANZ_HOST}
+      PLANZ_PORT: ${PLANZ_PORT}
+      PLANZ_USER: ${PLANZ_USER}
+      PLANZ_DATABASE: ${PLANZ_DATABASE}
+      PLANZ_PASSWORD: ${PLANZ_PASSWORD}
     ports:
-      - "8080:8000"
+      - "9000:8000"
     depends_on:
-      - mariadb
+      - ai-db
     restart: unless-stopped
     command: uvicorn app:app --host 0.0.0.0 --port 8000
     volumes:
-      - ./config.yml:/app/config.yml
-      - ./logs:/app/logs/  # Specify a volume for FastAPI logs
-
-  mariadb:
+      - ./app-logs:/app/logs
+  ai-db:
     image: mariadb:latest
-    container_name: chatbot-db
+    container_name: ai-db
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3306:3306"
+      - "9010:3306"
     restart: unless-stopped
     volumes:
-      - ./mariadb-config:/etc/mysql  # Specify a volume for MariaDB configuration
-      - ./mariadb-logs:/var/log/mysql  # Specify a volume for MariaDB logs
+      - mariadb-data:/var/lib/mysql
+      - ./db-logs:/var/log/mysql
+
+volumes:
+  mariadb-data:

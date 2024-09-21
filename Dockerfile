@@ -8,14 +8,17 @@ ENV PYTHONUNBUFFERED=1
 # Force UTF8 encoding for funky characters.
 ENV PYTHONIOENCODING=utf8
 
-# Install MariaDB
+# Install necessary dependencies for mysqlclient and other tools
 RUN apt-get update -y && \
     apt-get install --no-install-recommends -y \
     build-essential \
     libmariadb-dev-compat \
     libmariadb-dev \
     python-mysqldb \
-    git
+    git \
+    pkg-config && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
 WORKDIR /app

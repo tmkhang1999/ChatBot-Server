@@ -1,12 +1,27 @@
 # All the variables should be queried from .env file
+# "models/text-bison-001"
 log_level: "DEBUG"
 openai:
   api_key: !ENV ${OPENAI_API_KEY}
   model_name: "gpt-3.5-turbo"
+  temperature: "0.7"
+google:
+  api_key: !ENV ${GOOGLE_API_KEY}
+  model_name: "gemini-pro"
 app:
   host: "0.0.0.0"
   port: "8000"
-database:
+planz_db:
+  host: !ENV ${PLANZ_HOST}
+  port: !ENV ${PLANZ_PORT}
+  user: !ENV ${PLANZ_USER}
+  database: !ENV ${PLANZ_DATABASE}
+  password: !ENV ${PLANZ_PASSWORD}
+  tables: ["planz_projects", "planz_tasks",
+           "planz_milestones", "planz_clients",
+           "planz_project_status", "planz_users",
+           "planz_expenses", "planz_budgets"]
+ai_db:
   host: !ENV ${MYSQL_HOST}
   user: !ENV ${MYSQL_USER}
   password: !ENV ${MYSQL_PASSWORD}

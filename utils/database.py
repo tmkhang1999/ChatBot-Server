@@ -69,7 +69,7 @@ class Database:
         db.commit()
         db.close()
 
-        print("Successfully set up the tables")
+        print("Successfully set up the tables for AI database")
 
     def add_user(self, user_id, conversation_ids):
         """
