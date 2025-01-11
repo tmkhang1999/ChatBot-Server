@@ -1,17 +1,11 @@
-version: "1"
+version: "3.8"
+
 services:
   ai-app:
     image: tmkhang1999/planz-ai-server:latest
     container_name: ai-app
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-
       PLANZ_HOST: ${PLANZ_HOST}
       PLANZ_PORT: ${PLANZ_PORT}
       PLANZ_USER: ${PLANZ_USER}
@@ -19,26 +13,18 @@ services:
       PLANZ_PASSWORD: ${PLANZ_PASSWORD}
     ports:
       - "9000:8000"
-    depends_on:
-      - ai-db
     restart: unless-stopped
+    stop_grace_period: 10s
     command: uvicorn app:app --host 0.0.0.0 --port 8000
     volumes:
       - ./app-logs:/app/logs
-  ai-db:
-    image: mariadb:latest
-    container_name: ai-db
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - "9010:3306"
-    restart: unless-stopped
-    volumes:
-      - mariadb-data:/var/lib/mysql
-      - ./db-logs:/var/log/mysql
-
-volumes:
-  mariadb-data:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
