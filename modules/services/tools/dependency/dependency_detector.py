@@ -1,0 +1,25 @@
+from langchain.chains.llm import LLMChain
+from langchain_community.vectorstores import FAISS
+from langchain_openai import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings
+
+from modules.services.common import create_few_shot_prompt_template, create_example_selector
+from .examples import dependency_examples
+from .prompt import DEPENDENCY_PROMPT
+
+
+class DependencyDetector:
+    def __init__(self, MODEL_NAME, TEMPERATURE):
+        self.llm = ChatOpenAI(model_name=MODEL_NAME, temperature=TEMPERATURE)
+        self.DEPENDENCY_PROMPT_TEMPLATE = create_few_shot_prompt_template(
+            create_example_selector(dependency_examples, OpenAIEmbeddings, FAISS, 2, ["input"]),
+            "User: {input}\nAI: {answer}",
+            DEPENDENCY_PROMPT,
+            "User: {input}\nAI: ",
+            ["input"]
+        )
+        self.chain = self.DEPENDENCY_PROMPT_TEMPLATE | self.llm
+
+    def execute(self, user_input: str) -> str:
+        ans = self.chain.invoke({"input": user_input})
+        return ans.content
