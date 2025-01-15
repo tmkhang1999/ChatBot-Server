@@ -1,6 +1,7 @@
 english_examples = [
     {
         "input": "Plan a company trip",
+        "language": "English",
         "answer": "{{ \"Command\": \"Haha, sounds like you're in need of a break from work! To help plan your company trip, please select one option for each question below to provide more information.\", "
                   "\"What is the purpose of your trip?\": [\"Company trip\"], "
                   "\"How many guests are you expecting?\": [\"Less than 20\", \"20-50\", \"More than 50\"], "
@@ -13,6 +14,7 @@ english_examples = [
     },
     {
         "input": "Arrange a team-building picnic at a local park for our department next week with $1500",
+        "language": "English",
         "answer": "{{ \"Command\": \"Alright, for your department's team-building picnic at a local park next week with a budget of $1,500, please select one option for each question below to provide more information.\", "
                   "\"Tell me the purpose of your event\": [\"Team-building picnic\"], "
                   "\"Expected guest count?\": [\"20-30\", \"30-50\", \"More than 50\"], "
@@ -25,6 +27,7 @@ english_examples = [
     },
     {
         "input": "Organize a birthday party for my son with a live-music band. I intend to spend around 500 and invite 20 of his friends",
+        "language": "English",
         "answer": "{{ \"Command\": \"Alright, for your son's birthday party with a live-music band, a budget of $500, and 20 guests, please select one option for each question below to provide more information.\", "
                   "\"Purpose behind the event?\": [\"My son's birthday\"], "
                   "\"Anticipated attendance?\": [\"20\"], "
@@ -37,6 +40,7 @@ english_examples = [
     },
     {
         "input": "Host a corporate workshop with 50 guests next month focusing on digital marketing skills. Additionally, I plan to invite an expert as a guest speaker",
+        "language": "English",
         "answer": "{{ \"Command\": \"Alright, for hosting a corporate workshop on digital marketing skills next month, with 50 guests and an expert as a guest speaker. Please select one option for each question below to provide more information.\", "
                   "\"Workshop's primary focus?\": [\"Corporate workshop on digital marketing skills\"], "
                   "\"Expected number of participants?\": [\"50\"], "
