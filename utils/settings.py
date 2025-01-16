@@ -1,8 +1,9 @@
-from utils.config import ConfigManager
-from utils.database import Database
-from langchain_community.utilities import SQLDatabase
-import urllib.parse
 import os
+import urllib.parse
+
+from langchain_community.utilities import SQLDatabase
+
+from utils.config import ConfigManager
 
 # Set up config
 config_path = os.path.join(os.path.dirname(__file__), "config.yml")
