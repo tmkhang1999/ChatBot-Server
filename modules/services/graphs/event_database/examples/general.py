@@ -1,6 +1,6 @@
 examples = [
     {
-        "input": "The overview of the event",
+        "input": "Give me an overview of the event",
         "project_id": "X",
         "query": """
         SELECT
@@ -32,7 +32,7 @@ examples = [
         """,
     },
     {
-        "input": "The progress of the event",
+        "input": "Check the progress of this event",
         "project_id": "X",
         "query": """
         SELECT
@@ -68,17 +68,17 @@ examples = [
         """
     },
     {
-        "input": "Check deadline | start date of the event",
+        "input": "Check deadline/start date of the event",
         "project_id": "X",
         "query": "SELECT start_date, deadline FROM planz_projects WHERE id = X;",
     },
     {
-        "input": "Check title | name of the event",
+        "input": "Check title/name of the event",
         "project_id": "X",
         "query": "SELECT title FROM planz_projects WHERE id = X;",
     },
     {
-        "input": "Participants in this event",
+        "input": "Who is working on this event | Participants in this event",
         "project_id": "X",
         "query": """
         SELECT DISTINCT u.first_name, u.last_name FROM planz_users u JOIN planz_tasks t ON u.id = t.assigned_to WHERE t.project_id = X;
