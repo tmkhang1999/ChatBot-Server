@@ -1,6 +1,6 @@
 examples = [
     {
-        "input": "Give me an overview of the event",
+        "input": "The overview of the event",
         "project_id": "X",
         "query": """
         SELECT
@@ -8,7 +8,7 @@ examples = [
             planz_projects.description,
             planz_projects.start_date,
             planz_projects.deadline,
-            (SELECT budget FROM planz_budgets WHERE project_id = planz_projects.id) AS budget,
+            (SELECT SUM(budget) FROM planz_budgets WHERE project_id = planz_projects.id) AS total_budget,
             (SELECT SUM(amount) FROM planz_expenses WHERE project_id = planz_projects.id) AS total_expense,
             (IFNULL(completed_points_table.completed_points, 0) / IFNULL(total_points_table.total_points, 1)) * 100 AS progress
         FROM
@@ -32,7 +32,7 @@ examples = [
         """,
     },
     {
-        "input": "Check the progress of this event",
+        "input": "The progress of the event",
         "project_id": "X",
         "query": """
         SELECT
@@ -59,7 +59,7 @@ examples = [
         LEFT JOIN (
             SELECT project_id, SUM(points) AS completed_points
             FROM planz_tasks
-            WHERE deleted = 0 AND status_id = 3 -- Giả sử '3' chỉ trạng thái công việc đã hoàn thành
+            WHERE deleted = 0 AND status_id = 3
             GROUP BY project_id
         ) AS completed_points_table ON completed_points_table.project_id = planz_projects.id
         WHERE
@@ -68,20 +68,28 @@ examples = [
         """
     },
     {
-        "input": "Check deadline/start date of the event",
+        "input": "Check deadline | start date of the event",
         "project_id": "X",
         "query": "SELECT start_date, deadline FROM planz_projects WHERE id = X;",
     },
     {
-        "input": "Check title/name of the event",
+        "input": "Check title | name of the event",
         "project_id": "X",
         "query": "SELECT title FROM planz_projects WHERE id = X;",
     },
     {
-        "input": "Who is working on this event | Participants in this event",
+        "input": "Participants in this event | Check the member roles",
         "project_id": "X",
         "query": """
-        SELECT DISTINCT u.first_name, u.last_name FROM planz_users u JOIN planz_tasks t ON u.id = t.assigned_to WHERE t.project_id = X;
+        SELECT DISTINCT
+            u.first_name,
+            u.last_name,
+            COALESCE(r.title, 'No Role Assigned') AS role
+        FROM planz_tasks t
+        JOIN planz_users u ON t.assigned_to = u.id
+        LEFT JOIN planz_roles_in_project rp ON u.id = rp.user_id
+        LEFT JOIN planz_roles r ON rp.role_id = r.id
+        WHERE t.project_id = X;
         """
     }
 ]
