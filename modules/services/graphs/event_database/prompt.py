@@ -1,46 +1,21 @@
-CONTEXTUALIZE_PROMPT = """
-Given a list of previous user queries and a new question, rewrite the new question to clarify its meaning using the context from past queries. 
-Ensure the revised question is concise and in line with the user's past queries. If no clarification is needed, leave the question unchanged.
-
-Previous questions: {messages}
-New question: {input}
-Revised question:
-"""
-
 CLASSIFICATION_PROMPT = """
-You are PlanZ - a helpful chatbot designed to assist with event management tasks. Your primary capabilities include handling various types of user requests related to event management, such as:
-1. Checking the overview, progress, deadlines, budget, expenses, and participants of the event.
-2. Checking the progress and deadlines of each milestone.
-3. Checking the number and details of tasks by status (to-do, in-progress, done, late) for all users, specific users, or yourself.
-
-Your additional responsibilities include classifying user inputs into specific categories to tailor your response:
-- Out of Context: When the input doesn't relate to event management or any previous conversation.
-- Greeting: When the user greets you (e.g., "hello," "hi").
-- Ask About Capabilities: When the user asks what you can do (e.g., "what can you help with?").
-- Unclear: When the user's input is vague, incomplete, or difficult to interpret. In this case, request clarification.
-
-- General Request: When the user asks event details (the event's progress, deadlines, budget, expenses, and participants).
-- Budget Request: When the user asks about the budget or expenses of the event.
-- Task Request: When the user asks about listing tasks.
-- Milestone Request: When the user asks for details about specific milestones.
-
-If the type is 'greeting', respond politely. 
-If the type is 'out_of_context' or 'ask_about_capabilities', list your capabilities.
-If the type is 'unclear', ask for clarification.
-If the type is 'general_request', 'budget_request', 'task_request', or 'milestone_request', only return the type.
-
-Please return the following structure: 'type: <classification>, answer: <response>'.
+You are an event management assistant. Analyze the following user query and classify it into one of the following types:
+- GENERAL_REQUEST: For overall event details (name, progress, deadlines, participants, etc.).
+- BUDGET_REQUEST: For inquiries about budgets or expenses.
+- TASK_REQUEST: For inquiries regarding task lists or assignments by status (to-do, in-progress, done, late) for all users, specific users, or yourself..
+- MILESTONE_REQUEST: For queries about milestones or milestone progress.
+- NON_PROJECT: For queries unrelated to event management (e.g., greetings, capability inquiries).
 """
 
 QUERY_PROMPT = """
 When generating the query:
-
-Output the PostgreSQL query that answers the input question based on the provided example.
-Unless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 5 results.
-You can order the results by a relevant column to return the most interesting examples in the database.
-Never query for all the columns from a specific table, only ask for the relevant columns given the question.
-DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.
-Apart of provide the PostgreSQL query statement, please include in the response a short explanation of your reasoning to define the query.
+- Output the PostgreSQL query that answers the input question based on the provided example.
+- Unless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 5 results.
+- You can order the results by a relevant column to return the most interesting examples in the database.
+- Never query for all the columns from a specific table, only ask for the relevant columns given the question.
+- DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.
+- Only generate query to this table list below: {table_names}
+- Apart of provide the PostgreSQL query statement, please include in the response a short explanation of your reasoning to define the query.
 """
 
 GENERATE_PROMPT = """
@@ -101,30 +76,32 @@ Your role is to:
 """
 
 ANSWER_FILTER_PROMPT = """
-Use the following query result to answer the input question and reformat into a clean HTML output.
+Use the following query result to answer the input question and reformat it into clean HTML output without any markdown formatting (e.g., no triple backticks or language identifiers).
 
 Query Result: {query_info}
 
 Task:
 1. Remove all project IDs and task IDs from the input.
-2. Format the remaining content into structured HTML.
+2. If the query result is **empty or contains no valid tasks**, return only a plain text message following the user question.
 
 Formatting Rules:
-1. General Messages: 
-    - If the input is a plain message, wrap it in a `<p>` tag as a simple paragraph.
+- **General Messages:**
+  If the input is a plain message, wrap it in a <p> tag.
 
-2. List:
-    - If the input contains a list, format it as an ordered list using `<ol>` and `<li>` tags. Do not include any hyperlinks for names.
+- **Lists:**
+  If the input contains a list, format it as an ordered list using <ol> and <li> tags.
+  Do not include hyperlinks for names unless specified.
 
-3. Task Information:
-    - If the input contains tasks, format them as follows:
-      1. Always declare the **total number of tasks** in the header using an `<h2>` tag.
-      2. For each task, create an ordered list:
-         - The task title must always be a clickable link using an `<a>` tag with the task link as the URL.
-         - Assign the task link to the task title.
-         - Include additional task details (created dates, deadlines, descriptions, goals) in a structured format:
-            - Use `<strong>` for labels such as "Created Date", "Deadline", etc.
-            - Place each detail on a new line within a `<div>` for clarity.
-            - If a detail is missing (e.g., no goal or description), simply omit that detail.
-      3. If there are links to ideas or additional resources, include them in `<a>` tags with appropriate text.
+- **Task Information (If query result is not empty):**
+  a. Start with an <h2> tag declaring the total number of tasks.
+  b. If there are no valid tasks after filtering, return only "No tasks available."
+  c. For each task, create an ordered list entry (<li>) that includes:
+     - A clickable task title using an <a> tag with the task link as the URL.
+     - Additional task details (e.g., Created Date, Deadline, Description, Goals) formatted inside a <div>, with labels in <strong> tags and each detail on a new line. Omit any missing detail.
+  d. If there are additional resource links, include them using <a> tags with appropriate text.
+
+Output:
+- If tasks exist, output the formatted HTML.
+- If no tasks exist, return only a plain message.
+- Do not wrap the output in markdown code blocks or any other formatting markers.
 """
