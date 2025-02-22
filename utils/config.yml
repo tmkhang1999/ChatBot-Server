@@ -1,5 +1,4 @@
 # All the variables should be queried from .env file
-# "models/text-bison-001"
 log_level: "DEBUG"
 openai:
   api_key: !ENV ${OPENAI_API_KEY}
@@ -17,10 +16,8 @@ planz_db:
   user: !ENV ${PLANZ_USER}
   database: !ENV ${PLANZ_DATABASE}
   password: !ENV ${PLANZ_PASSWORD}
-  tables: ["planz_projects", "planz_tasks",
-           "planz_milestones", "planz_clients",
-           "planz_project_status", "planz_users",
-           "planz_expenses", "planz_budgets"]
+  tables: ["planz_projects", "planz_tasks", "planz_milestones", "planz_project_status", "planz_users",
+           "planz_expenses", "planz_budgets", "planz_currency", "planz_settings"]
 ai_db:
   host: !ENV ${MYSQL_HOST}
   user: !ENV ${MYSQL_USER}

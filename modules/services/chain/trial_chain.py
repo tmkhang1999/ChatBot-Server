@@ -1,5 +1,3 @@
-import logging
-
 from langchain_openai import ChatOpenAI
 
 from modules.services.chain.base_chain import StreamingConversationChain

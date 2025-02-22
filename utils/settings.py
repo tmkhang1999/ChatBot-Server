@@ -1,17 +1,11 @@
 import os
 import urllib.parse
-
 from langchain_community.utilities import SQLDatabase
-
 from utils.config import ConfigManager
 
 # Set up config
 config_path = os.path.join(os.path.dirname(__file__), "config.yml")
 config_manager = ConfigManager(config_path)
-
-# Set up database
-# db_info = config_manager.get("ai_db")
-# ai_db = Database(db_info["host"], db_info["database"], db_info["user"], db_info["password"])
 
 # Connect to the host database
 planz_db_info = config_manager.get("planz_db")
