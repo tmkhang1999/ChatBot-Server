@@ -1,8 +1,9 @@
 import operator
 from enum import Enum
-from typing import List, Optional, Annotated
+from typing import Annotated
+from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing_extensions import TypedDict
 
 
@@ -12,15 +13,6 @@ class Query(BaseModel):
     is_valid: bool = Field(True, description="Indicates if the statement is syntactically valid")
     result: str = Field("", description="Query result")
     error: str = Field("", description="Error message if exists")
-
-    @property
-    def info(self) -> str:
-        """Returns formatted successful query information."""
-        return (
-            f"SQL query:\n{self.statement}\n\n"
-            f"Reasoning:\n{self.reasoning}\n\n"
-            f"Result:\n{self.result}"
-        )
 
     @property
     def error_info(self) -> str:
@@ -33,19 +25,28 @@ class Query(BaseModel):
 
 
 class QuestionType(Enum):
-    OUT_OF_CONTEXT = "out_of_context"
-    GREETING = "greeting"
-    ASK_ABOUT_CAPABILITIES = "ask_about_capabilities"
-    UNCLEAR = "unclear"
     GENERAL_REQUEST = "general_request"
     BUDGET_REQUEST = "budget_request"
     TASK_REQUEST = "task_request"
     MILESTONE_REQUEST = "milestone_request"
+    NON_PROJECT = "non_project"
 
 
 class ClassificationOutput(BaseModel):
     question_type: QuestionType
-    answer: str
+    confidence: float = Field(description="Classification confidence between 0 and 1")
+    requires_clarification: bool = Field(
+        description="Indicates if the query is unclear and needs further clarification")
+    suggested_clarification: str = Field(
+        description="A suggested clarifying question if clarification is needed; otherwise, empty")
+    answer: str = Field(
+        description="A response to be used for non-project queries (e.g., greetings or capability inquiries). If not applicable, leave empty.")
+
+    @validator('question_type', pre=True)
+    def normalize_question_type(cls, value):
+        if isinstance(value, str):
+            return value.lower()
+        return value
 
 
 class QueryResponse(BaseModel):
@@ -55,18 +56,21 @@ class QueryResponse(BaseModel):
 
 
 class SQLState(TypedDict):
-    question: str
-    question_type: QuestionType
+    current_question: str
     project_id: int
-    max_attempts: int
     user_id: int
     workspace_link: str
+    max_attempts: int
     attempts: Annotated[int, operator.add]
-    query: Optional[Query]
+    current_query: Optional[Query]
     error_message: Optional[str]
     tables_info: Optional[str]
     answer: str
-    messages: list[str]
+    history_context: Optional[str]
+    context_window: int
+    requires_clarification: bool
+    suggested_clarification: str
+    question_type: Optional[QuestionType]
 
 
 class SchemaRelevance(BaseModel):
