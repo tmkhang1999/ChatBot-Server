@@ -9,18 +9,18 @@ You are an event management assistant. Analyze the following user query and clas
 
 QUERY_PROMPT = """
 When generating the query:
-- Output the PostgreSQL query that answers the input question based on the provided example.
+- Output a MySQL query that answers the input question based on the provided example.
 - Unless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 5 results.
 - You can order the results by a relevant column to return the most interesting examples in the database.
-- Never query for all the columns from a specific table, only ask for the relevant columns given the question.
-- DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.
-- Only generate query to this table list below: {table_names}
-- Apart of provide the PostgreSQL query statement, please include in the response a short explanation of your reasoning to define the query.
+- Only include the relevant columns given the question.
+- DO NOT include any DML statements (INSERT, UPDATE, DELETE, DROP, etc.).
+- Only query the following table(s): {table_names}
+- In your response, include the MySQL query and a short explanation of your reasoning.
 """
 
 GENERATE_PROMPT = """
-You are a SQL expert with a strong attention to detail.
-Please create a syntactically correct PostgreSQL query to answer the user question below.
+You are a MySQL expert with strong attention to detail.
+Please create a syntactically correct MySQL query to answer the user question below.
 """ + QUERY_PROMPT
 
 FIX_PROMPT = """
@@ -81,27 +81,21 @@ Use the following query result to answer the input question and reformat it into
 Query Result: {query_info}
 
 Task:
-1. Remove all project IDs and task IDs from the input.
-2. If the query result is **empty or contains no valid tasks**, return only a plain text message following the user question.
+1. First, check if the query result is empty or contains no valid tasks after removing all project IDs and task IDs. 
+    - If it is empty or no valid tasks remain, return only a plain text message (e.g., "Sorry! There's no tasks due today or this week") following the user question, and do not include any HTML tags.
+2. If valid tasks exist, proceed to format them as follows:
+    a. Begin with an <h2> tag that declares the total number of tasks.
+    b. Create an ordered list (<ol>) where each task is a list item (<li>).
+    c. For each task, include:
+       - A clickable task title using an <a> tag with the task link as the URL.
+       - Additional task details (e.g., Created Date, Deadline, Description, Goals) inside a <div>. Format each detail on a new line with labels in <strong> tags, omitting any missing detail.
+    d. If there are additional resource links, include them using <a> tags with appropriate text.
+3. Ensure that if the query result is empty or there are no valid tasks after filtering, no HTML list or heading is output.
 
 Formatting Rules:
-- **General Messages:**
+- **General Messages:** 
   If the input is a plain message, wrap it in a <p> tag.
-
-- **Lists:**
+- **Lists:** 
   If the input contains a list, format it as an ordered list using <ol> and <li> tags.
   Do not include hyperlinks for names unless specified.
-
-- **Task Information (If query result is not empty):**
-  a. Start with an <h2> tag declaring the total number of tasks.
-  b. If there are no valid tasks after filtering, return only "No tasks available."
-  c. For each task, create an ordered list entry (<li>) that includes:
-     - A clickable task title using an <a> tag with the task link as the URL.
-     - Additional task details (e.g., Created Date, Deadline, Description, Goals) formatted inside a <div>, with labels in <strong> tags and each detail on a new line. Omit any missing detail.
-  d. If there are additional resource links, include them using <a> tags with appropriate text.
-
-Output:
-- If tasks exist, output the formatted HTML.
-- If no tasks exist, return only a plain message.
-- Do not wrap the output in markdown code blocks or any other formatting markers.
 """
