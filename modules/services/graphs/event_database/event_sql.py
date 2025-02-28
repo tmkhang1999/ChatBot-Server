@@ -1,6 +1,6 @@
 import logging
 
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain.prompts import PromptTemplate, ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain_community.vectorstores import FAISS
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
 from langchain_openai import ChatOpenAI
@@ -105,6 +105,7 @@ class EventChatbot:
     def classify(self, state: SQLState) -> SQLState:
         """Classify the current question type."""
         self.logger.info("Classifying question type")
+        print("Classifying question type")
 
         state["current_query"] = None
 
@@ -123,6 +124,7 @@ class EventChatbot:
         })
         x = state.get("history_context", "")
         self.logger.info(f"History: {x}")
+        print(f"History: {x}")
 
         # Update state and current turn
         state["question_type"] = dict(response).get("question_type")
@@ -135,10 +137,12 @@ class EventChatbot:
     def generate_query(self, state: SQLState) -> SQLState:
         """Generates SQL query with historical context."""
         self.logger.info("Generating query with history")
+        print("Generating query with history")
 
         attempts = state.get("attempts", 0)
         max_attempts = state.get("max_attempts", self.MAX_ATTEMPTS_DEFAULT)
         self.logger.info(f"Attempt {attempts + 1} of {max_attempts}")
+        print(f"Attempt {attempts + 1} of {max_attempts}")
 
         question_type = state["question_type"]
         project_id = state["project_id"]
@@ -195,15 +199,18 @@ class EventChatbot:
         )
         state["current_query"] = query
         self.logger.info(query)
+        print(query)
         return state
 
     def execute_query(self, state: SQLState) -> SQLState:
         """Execute the generated SQL query."""
         self.logger.info("Executing query")
+        print("Executing query")
 
         attempts = state.get("attempts", 0)
         max_attempts = state.get("max_attempts", self.MAX_ATTEMPTS_DEFAULT)
         self.logger.info(f"Attempt {attempts + 1} of {max_attempts}")
+        print(f"Attempt {attempts + 1} of {max_attempts}")
 
         query = state["current_query"]
         if not query.statement:
@@ -268,6 +275,7 @@ class EventChatbot:
     def generate_answer(self, state: SQLState) -> SQLState:
         """Generate final answer based on query results and update conversation history."""
         self.logger.info("Generating answer")
+        print("Generating answer")
 
         def update_history(state: SQLState) -> None:
             """Update history_context with the current question."""
@@ -298,15 +306,14 @@ class EventChatbot:
             update_history(state)
             return state
 
-        answer_template = ChatPromptTemplate.from_messages([
-            SystemMessagePromptTemplate.from_template(ANSWER_FILTER_PROMPT),
-            HumanMessagePromptTemplate.from_template("Question: {input}")
-        ])
+        answer_template = PromptTemplate(template=ANSWER_FILTER_PROMPT, input_variables=["query_details", "question"])
+
+        print(state["current_query"].result)
 
         answer_filter = answer_template | self.answer_llm
         response = answer_filter.invoke({
-            "input": state["current_question"],
-            "query_info": state["current_query"].result
+            "question": state["current_question"],
+            "query_details": state["current_query"].result
         })
 
         state["answer"] = response.content

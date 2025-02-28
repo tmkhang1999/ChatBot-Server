@@ -11,6 +11,7 @@ base_chain = StreamingConversationChain()
 @chat_router.post("/chat")
 async def generate_chat_response(data: ChatRequest):
     """Handles chat requests, generating responses based on the provided ChatRequest data."""
+    print(f"Input: {data}")
     try:
         # Assign a unique conversation_id if it's not provided
         if data.conversation_id is None:
@@ -20,7 +21,7 @@ async def generate_chat_response(data: ChatRequest):
         response_message = base_chain.generate_response(
             data.conversation_id, data.project_id, data.user_id, data.workspace_link, data.message
         ) if data.message else "What can I help you with today?"
-        print(response_message)
+        print(f"Output: {response_message}")
 
         content = {
             "conversation_id": data.conversation_id,
