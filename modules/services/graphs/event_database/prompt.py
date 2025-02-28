@@ -7,10 +7,11 @@ You are an event management assistant. Analyze the following user query and clas
 - NON_PROJECT: For queries unrelated to event management (e.g., greetings, capability inquiries).
 """
 
+# Unless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 5
+# results.
 QUERY_PROMPT = """
 When generating the query:
 - Output a MySQL query that answers the input question based on the provided example.
-- Unless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 5 results.
 - You can order the results by a relevant column to return the most interesting examples in the database.
 - Only include the relevant columns given the question.
 - DO NOT include any DML statements (INSERT, UPDATE, DELETE, DROP, etc.).
@@ -76,26 +77,67 @@ Your role is to:
 """
 
 ANSWER_FILTER_PROMPT = """
-Use the following query result to answer the input question and reformat it into clean HTML output without any markdown formatting (e.g., no triple backticks or language identifiers).
+You are provided with two inputs:
+• an object containing the executed SQL query, reasoning behind the query, and its result set.
+• the original user question.
 
-Query Result: {query_info}
+Your task is to generate a response that meets the following requirements:
 
-Task:
-1. First, check if the query result is empty or contains no valid tasks after removing all project IDs and task IDs. 
-    - If it is empty or no valid tasks remain, return only a plain text message (e.g., "Sorry! There's no tasks due today or this week") following the user question, and do not include any HTML tags.
-2. If valid tasks exist, proceed to format them as follows:
-    a. Begin with an <h2> tag that declares the total number of tasks.
-    b. Create an ordered list (<ol>) where each task is a list item (<li>).
-    c. For each task, include:
-       - A clickable task title using an <a> tag with the task link as the URL.
-       - Additional task details (e.g., Created Date, Deadline, Description, Goals) inside a <div>. Format each detail on a new line with labels in <strong> tags, omitting any missing detail.
-    d. If there are additional resource links, include them using <a> tags with appropriate text.
-3. Ensure that if the query result is empty or there are no valid tasks after filtering, no HTML list or heading is output.
+### **1. Answer Formatting**
+   - **If the query result is empty:**  
+     - Return a **plain text message** inside an HTML `<p>` tag.  
+     - Example: `<p>There are no late tasks.</p>` or `<p>Yes, all tasks have been assigned.</p>`
 
-Formatting Rules:
-- **General Messages:** 
-  If the input is a plain message, wrap it in a <p> tag.
-- **Lists:** 
-  If the input contains a list, format it as an ordered list using <ol> and <li> tags.
-  Do not include hyperlinks for names unless specified.
+   - **If the query result contains many objects:**  
+     - Start with a **paragraph stating the total number of objects** in the query result (e.g., `<p>Total late tasks: 7</p>`).
+     - If there are more than 5 objects, list only 5 examples. (e.g., `<p>Here are some tasks of the list</p>`)
+     - Use an **ordered list (`<ol>`)** where each object is a `<li>` element.
+     - For example, in the task list, each task should include:
+       - A **clickable title** using an `<a>` tag that links to the task’s URL if the link is included in the query results.
+       - A `<div>` containing additional task details, each formatted as:
+         - `<strong>Created Date:</strong> YYYY-MM-DD<br>`
+         - `<strong>Deadline:</strong> YYYY-MM-DD<br>`
+         - `<strong>Description:</strong> Task description here.<br>`
+         - `<strong>Goals:</strong> Goal details here.<br>`
+     - **Exclude any missing details** (i.e., do not include empty fields).
+     - For other object lists like expenses, budgets, etc, it does not have to follow the format of task list.
+
+### **2. Output Format**
+   - The response **must be valid, clean HTML**.
+   - **No Markdown formatting** (e.g., no triple backticks or language identifiers).
+
+### **3. Response Structure**.
+   - Use clear, concise and funny language.
+   - Tailor your response dynamically based on the provided query details and question.
+   - If the query result is too long, only return the total number of objects and list 5 examples.
+
+### **Example Output (when tasks exist)**
+<p>There are 2 done tasks:</p>
+<ol>
+    <li>
+        <a href="task_link_1">Task Title 1</a>
+        <div>
+            <strong>Created Date:</strong> 2025-01-15<br>
+            <strong>Deadline:</strong> 2025-01-20<br>
+            <strong>Description:</strong> Complete project documentation.<br>
+            <strong>Goals:</strong> Finalize reports and review code.
+        </div>
+    </li>
+    <li>
+        <a href="task_link_2">Task Title 2</a>
+        <div>
+            <strong>Created Date:</strong> 2025-01-16<br>
+            <strong>Deadline:</strong> 2025-01-22<br>
+            <strong>Description:</strong> Prepare meeting agenda.
+        </div>
+    </li>
+</ol>
+
+### **Example Output (when query result is empty)**
+<p>Yes, all tasks have been assigned. There are no unassigned tasks.</p>
+
+### Now, given the following inputs: 
+Query Details: {query_details} 
+Question: {question}
+Generate your humorous answer accordingly
 """
