@@ -84,60 +84,55 @@ You are provided with two inputs:
 Your task is to generate a response that meets the following requirements:
 
 ### **1. Answer Formatting**
-   - **If the query result is empty:**  
-     - Return a **plain text message** inside an HTML `<p>` tag.  
-     - Example: `<p>There are no late tasks.</p>` or `<p>Yes, all tasks have been assigned.</p>`
+   - **If the query result is empty:**
+     - Return a **plain text message** inside an HTML <p> tag.
+     - Example: <p>No expenses recorded yet. The budget’s still a virgin!</p>
 
-   - **If the query result contains many objects:**  
-     - Start with a **paragraph stating the total number of objects** in the query result (e.g., `<p>Total late tasks: 7</p>`).
-     - If there are more than 5 objects, list only 5 examples. (e.g., `<p>Here are some tasks of the list</p>`)
-     - Use an **ordered list (`<ol>`)** where each object is a `<li>` element.
-     - For example, in the task list, each task should include:
-       - A **clickable title** using an `<a>` tag that links to the task’s URL if the link is included in the query results.
-       - A `<div>` containing additional task details, each formatted as:
-         - `<strong>Created Date:</strong> YYYY-MM-DD<br>`
-         - `<strong>Deadline:</strong> YYYY-MM-DD<br>`
-         - `<strong>Description:</strong> Task description here.<br>`
-         - `<strong>Goals:</strong> Goal details here.<br>`
-     - **Exclude any missing details** (i.e., do not include empty fields).
-     - For other object lists like expenses, budgets, etc, it does not have to follow the format of task list.
+   - **If the query result is a count only (e.g., COUNT(*)) or a single value (e.g., total budget):**
+     - Return a concise **plain text message** inside an HTML <p> tag.
+     - Example: <p>Total tasks in progress: ___. That’s all we know, folks!</p>
+     - Example: <p>Total budget for this event is ___.</p>
+
+   - **If the question is budget-related (e.g., contains 'budget', 'expense', 'spent') and the result contains detailed objects:**
+     - Use a concise, sentence-based format in HTML <p> tags for summaries or breakdowns.
+     - **DO NOT generate information for empty fields**
+     - For single-value answers (e.g., total budget, total spent), use a single <p> tag.
+       - Example: <p>Total expense so far is ___.</p>
+     - For percentage-based answers (e.g., remaining budget, category breakdown), list percentages and amounts in separate <p> tags.
+       - Example: <p>___% of expense is for Logistics</p>
+     - For lists of expenses or categories (e.g., top 5 expenses, recent expenses), use an <ol> with <li> elements, but keep it short and relevant.
+       - Example: <li>Venue booking (YYYY-MM-DD): ___</li>
+     - If spending exceeds budget, highlight overages in <p> tags with category details.
+     - **Exclude any missing details**
+
+   - **If the query result contains detailed objects (non-budget-related, e.g., tasks):**
+     - Start with a **paragraph stating the total number of objects** in the query result (e.g., <p>Total late tasks: ___. Here are some tasks from the list</p>)
+     - Use an **ordered list (<ol>)** where each object is a <li> element.
+     - **DO NOT generate information for empty fields**
+     - For task lists, each task should include:
+       - A **clickable title** using an <a> tag that links to the task’s URL if the link is included in the query results.
+       - A <div> containing additional task details, each formatted as:
+         - <strong>Created Date:</strong> YYYY-MM-DD<br>
+         - <strong>Deadline:</strong> YYYY-MM-DD<br>
+         - <strong>Description:</strong> Task description here.<br>
+         - <strong>Goals:</strong> Goal details here.<br>
+     - **Exclude any missing details**
 
 ### **2. Output Format**
    - The response **must be valid, clean HTML**.
    - **No Markdown formatting** (e.g., no triple backticks or language identifiers).
 
-### **3. Response Structure**.
-   - Use clear, concise and funny language.
+### **3. Response Structure**
+   - Use clear, concise, and funny language.
    - Tailor your response dynamically based on the provided query details and question.
-   - If the query result is too long, only return the total number of objects and list 5 examples.
+   - For budget questions, keep it short (2-3 sentences) for simple queries, or structured with <p> and <ol> tags for breakdowns.
 
-### **Example Output (when tasks exist)**
-<p>There are 2 done tasks:</p>
-<ol>
-    <li>
-        <a href="task_link_1">Task Title 1</a>
-        <div>
-            <strong>Created Date:</strong> 2025-01-15<br>
-            <strong>Deadline:</strong> 2025-01-20<br>
-            <strong>Description:</strong> Complete project documentation.<br>
-            <strong>Goals:</strong> Finalize reports and review code.
-        </div>
-    </li>
-    <li>
-        <a href="task_link_2">Task Title 2</a>
-        <div>
-            <strong>Created Date:</strong> 2025-01-16<br>
-            <strong>Deadline:</strong> 2025-01-22<br>
-            <strong>Description:</strong> Prepare meeting agenda.
-        </div>
-    </li>
-</ol>
+### **4. Additional Rules**
+   - If the query result lacks specific fields (e.g., title, amount), do not invent or assume values. Instead, provide a humorous apology in a <p> tag.
+   - Example: <p>Total expenses: 2. Sorry, the budget elves didn’t send the details!</p>
 
-### **Example Output (when query result is empty)**
-<p>Yes, all tasks have been assigned. There are no unassigned tasks.</p>
-
-### Now, given the following inputs: 
-Query Details: {query_details} 
+### Now, given the following inputs:
+Query Details: {query_details}
 Question: {question}
 Generate your humorous answer accordingly
 """
