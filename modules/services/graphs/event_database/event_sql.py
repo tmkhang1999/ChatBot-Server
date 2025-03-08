@@ -37,7 +37,7 @@ class EventChatbot:
         )
 
         self.classify_llm = ChatOpenAI(model=MODEL_NAME, temperature=0.3, verbose=True)
-        self.query_llm = ChatOpenAI(model=MODEL_NAME, temperature=0, verbose=True)
+        self.query_llm = ChatOpenAI(model=MODEL_NAME, temperature=0.5, verbose=True)
         self.schema_llm = ChatOpenAI(model_name=MODEL_NAME, temperature=0.7, verbose=True)
         self.answer_llm = ChatOpenAI(model=MODEL_NAME, temperature=0.5, verbose=True)
 
@@ -179,7 +179,7 @@ class EventChatbot:
             "User input: {input}\nProject ID: {project_id}\nSQL query: {query}",
             instructions,
             "\nPrevious Questions: {history}\nQuestion: {input}\nProject ID: {project_id}",
-            ["history", "input", "project_id", "user_id", "workspace_link", "s"]
+            ["history", "input", "project_id", "user_id", "workspace_link", "s", " "]
         )
 
         generator = query_generation_template | self.query_llm.with_structured_output(QueryResponse)
@@ -189,7 +189,8 @@ class EventChatbot:
             "history": state.get("history_context", ""),
             "user_id": state["user_id"],
             "workspace_link": state["workspace_link"],
-            "s": ""
+            "s": "",
+            " ": ""
         })
 
         # Update state and current turn
