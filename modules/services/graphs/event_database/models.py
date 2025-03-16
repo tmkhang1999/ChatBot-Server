@@ -1,7 +1,7 @@
 import operator
 from enum import Enum
 from typing import Annotated
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field, validator
 from typing_extensions import TypedDict
@@ -11,7 +11,7 @@ class Query(BaseModel):
     statement: str = Field(description="SQL query statement")
     reasoning: str = Field(description="Reasoning behind the query definition")
     is_valid: bool = Field(True, description="Indicates if the statement is syntactically valid")
-    result: str = Field("", description="Query result")
+    result: List[Any] = Field("", description="Query result")
     error: str = Field("", description="Error message if exists")
 
     @property
@@ -22,7 +22,6 @@ class Query(BaseModel):
             f"Reasoning:\n{self.reasoning}\n\n"
             f"Error: {self.error}"
         )
-
 
 class QuestionType(Enum):
     GENERAL_REQUEST = "general_request"
@@ -61,7 +60,7 @@ class SQLState(TypedDict):
     user_id: int
     workspace_link: str
     max_attempts: int
-    attempts: Annotated[int, operator.add]
+    attempts: int
     current_query: Optional[Query]
     error_message: Optional[str]
     tables_info: Optional[str]
