@@ -9,7 +9,6 @@ from utils.settings import planz_db
 
 class StreamingConversationChain:
     def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 0.7):
-        self.llm = ChatOpenAI(model_name=model_name, temperature=temperature)
         self.agent = EventChatbot(MODEL_NAME=model_name, database=planz_db)
         self.thread_ids = set()
 

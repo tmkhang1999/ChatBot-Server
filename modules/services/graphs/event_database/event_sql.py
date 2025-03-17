@@ -32,13 +32,13 @@ class EventChatbot:
             sql_examples,
             OpenAIEmbeddings(),
             FAISS,
-            k=3,
+            k=2,
             input_keys=["input", "project_id"],
         )
 
         self.classify_llm = ChatOpenAI(model=MODEL_NAME, temperature=0.3, verbose=True)
-        self.query_llm = ChatOpenAI(model=MODEL_NAME, temperature=0.5, verbose=True)
-        self.schema_llm = ChatOpenAI(model_name=MODEL_NAME, temperature=0.7, verbose=True)
+        self.query_llm = ChatOpenAI(model=MODEL_NAME, temperature=0.7, verbose=True)
+        self.schema_llm = ChatOpenAI(model_name=MODEL_NAME, temperature=0.5, verbose=True)
         self.answer_llm = ChatOpenAI(model=MODEL_NAME, temperature=0.5, verbose=True)
 
     def _create_workflow(self) -> CompiledStateGraph:
@@ -108,6 +108,7 @@ class EventChatbot:
         print("Classifying question type")
 
         state["current_query"] = None
+        state["attempts"] = 0
 
         classification_prompt_template = ChatPromptTemplate.from_messages([
             SystemMessagePromptTemplate.from_template(CLASSIFICATION_PROMPT),
@@ -123,6 +124,7 @@ class EventChatbot:
             "history": state.get("history_context", "")
         })
         x = state.get("history_context", "")
+
         self.logger.info(f"History: {x}")
         print(f"History: {x}")
 
@@ -141,6 +143,7 @@ class EventChatbot:
 
         attempts = state.get("attempts", 0)
         max_attempts = state.get("max_attempts", self.MAX_ATTEMPTS_DEFAULT)
+
         self.logger.info(f"Attempt {attempts + 1} of {max_attempts}")
         print(f"Attempt {attempts + 1} of {max_attempts}")
 
@@ -167,9 +170,11 @@ class EventChatbot:
 
             instructions = instructions.format(table_names=table_names) + EXAMPLE_PROMPT
         else:
+            info = state["tables_info"].replace("{", "{{").replace("}", "}}")
+            error_info = str(current_query.error_info).replace("{", "{{").replace("}", "}}")
             instructions = FIX_PROMPT.format(
-                info=state["tables_info"],
-                error_info=current_query.error_info,
+                info=info,
+                error_info=error_info,
                 table_names=table_names
             ) + EXAMPLE_PROMPT
 
@@ -178,15 +183,19 @@ class EventChatbot:
             self.example_selector,
             "User input: {input}\nProject ID: {project_id}\nSQL query: {query}",
             instructions,
-            "\nPrevious Questions: {history}\nQuestion: {input}\nProject ID: {project_id}",
-            ["history", "input", "project_id", "user_id", "workspace_link", "s", " "]
+            "\nQuestion: {input}\nProject ID: {project_id}",
+            ["input", "project_id", "user_id", "workspace_link", "s", " "]
         )
+
+        x = self.example_selector.select_examples({"input": state["current_question"], "project_id": "1"})
+        self.logger.info(f"Examples: {x}")
+        print(f"Examples: {x}")
 
         generator = query_generation_template | self.query_llm.with_structured_output(QueryResponse)
         gen_response = generator.invoke({
             "input": state["current_question"],
             "project_id": project_id,
-            "history": state.get("history_context", ""),
+            # "history": state.get("history_context", ""),
             "user_id": state["user_id"],
             "workspace_link": state["workspace_link"],
             "s": "",
@@ -210,6 +219,7 @@ class EventChatbot:
 
         attempts = state.get("attempts", 0)
         max_attempts = state.get("max_attempts", self.MAX_ATTEMPTS_DEFAULT)
+
         self.logger.info(f"Attempt {attempts + 1} of {max_attempts}")
         print(f"Attempt {attempts + 1} of {max_attempts}")
 
@@ -220,7 +230,7 @@ class EventChatbot:
             return state
 
         try:
-            query.result = self.database.run(query.statement)
+            query.result = self.database._execute(query.statement)
             query.is_valid = True
 
             # Reset attempts after success
@@ -256,7 +266,7 @@ class EventChatbot:
             HumanMessagePromptTemplate.from_template("Question: {question}")
         ])
 
-        schema_classifier = schema_relevance_template | self.llm.with_structured_output(SchemaRelevance)
+        schema_classifier = schema_relevance_template | self.schema_llm.with_structured_output(SchemaRelevance)
         schema_relevance = schema_classifier.invoke({
             "question": question,
             "table_names": self.database.get_usable_table_names()
@@ -307,8 +317,10 @@ class EventChatbot:
             update_history(state)
             return state
 
-        answer_template = PromptTemplate(template=ANSWER_FILTER_PROMPT, input_variables=["query_details", "question"])
+        answer_template = PromptTemplate(template=ANSWER_FILTER_PROMPT,
+                                         input_variables=["query_details", "question"])
 
+        self.logger.info(state["current_query"].result)
         print(state["current_query"].result)
 
         answer_filter = answer_template | self.answer_llm
