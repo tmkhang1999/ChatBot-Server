@@ -2,11 +2,22 @@ import os
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from modules.routers import trial_router, chat_router
 from utils.settings import config_manager
 from fastapi.responses import JSONResponse
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
 app.include_router(trial_router, tags=["trial"])
 app.include_router(chat_router, tags=["chat"])
 
