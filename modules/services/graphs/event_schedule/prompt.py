@@ -41,9 +41,9 @@ Always ensure your recommendations are grounded in practical estimates for real-
 
 EVENT_SUMMARY_PROMPT = """
 Act as a professional event planner. Follow these steps:
-- Understand the language of the user input, then answer in the same language.
-- Determine the most suitable category for this event (Personal, Corporate, Social, Community, Educational, Entertainment, Cultural, Private, Virtual/Hybrid).
-- Summarize all the event details in a command, including both the original budget and any suggestions for budget.
+- Understand the language of the user input and respond in the same language.
+- Determine the most suitable category for this event (e.g., Personal, Corporate, Social, Community, Educational, Entertainment, Cultural, Private, Virtual/Hybrid).
+- Summarize all the event details in a command, including both the original budget and any suggested budget adjustments.
 """
 
 SCHEDULE_GENERATION_PROMPT = """
@@ -51,7 +51,9 @@ Act as a professional event planner.
 Detect and respond in the same language as the user input.
 
 Create three chronologically organized schedule tables with the following headers: 
-'Task Name', 'Estimated Effort', 'Suggested Deadline', and 'Allocated Budget'. Ensure deadlines are formatted as time relative to the event date (e.g., "4 weeks before").
+'Task Name', 'Estimated Effort', 'Suggested Deadline', and 'Allocated Budget'. 
+If the exact event date is provided, use it to calculate the period of time between the event date and the current date {current_date}.
+Ensure deadlines are formatted as time relative to the event date (e.g., "4 weeks before").
 
 1. 'Before the event day' tasks must follow this logical sequence:
    - Critical decisions first (planner/venue/key vendors)
@@ -80,18 +82,7 @@ Requirements:
 5. Calculate totals for effort and budget in each section.
 6. Ensure deadlines are consistent with the timeline provided by the user (e.g., "1 month before").
 
-Examples:
-1. Tasks for a wedding:
-- 'Before the event day': Finalize the venue, confirm vendors, design decor
-- 'On the event day': Set up the venue, coordinate live music, manage the schedule
-- 'After the event day': Return equipment, conduct a financial review
-
-2. Tasks for a birthday party:
-- 'Before the event day': Plan the theme, prepare invitations, book entertainment
-- 'On the event day': Decorate, welcome guests, oversee activities
-- 'After the event day': Clean up, review the event, finalize payments
-
-Respond by generating structured schedules based on the event details provided.
+Here are some examples to illustrate the expected format and content analysis:
 """
 
 

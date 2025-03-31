@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from langchain.chains import LLMChain
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
@@ -21,7 +22,8 @@ EVENT_SCHEDULE_PROMPT_TEMPLATE = create_few_shot_prompt_template(
     create_example_selector(event_schedule_examples, OpenAIEmbeddings, FAISS, 1, ["input"]),
     "User: {input}\nAI: {answer}",
     SCHEDULE_GENERATION_PROMPT,
-    "\nUser: {input}\nAI:",
+    "\nRespond by generating structured schedules based on the event details provided."
+    "\nExtracted event details: {input}\nAI:",
     ["input"]
 )
 
@@ -39,6 +41,7 @@ class EventPlanner:
         # Add nodes to the graph
         workflow.add_node("process_additional_info", self.process_update_info)
         workflow.add_node("apply_table_updates", self.apply_table_updates)
+
         workflow.add_node("recommend_new_budget", self.recommend_new_budget)
         workflow.add_node("summarize_event", self.summarize_event)
         workflow.add_node("generate_schedules", self.generate_schedules)
@@ -167,7 +170,7 @@ class EventPlanner:
         schedule_node = EVENT_SCHEDULE_PROMPT_TEMPLATE | self.llm.with_structured_output(ScheduleTables)
         input_prompt = f"{state['event_details']}\nNew suggested budget: {state['new_budget']}" if "new_budget" in state else \
             state['event_details']
-        schedules = schedule_node.invoke({"input": input_prompt})
+        schedules = schedule_node.invoke({"input": input_prompt, "current_date": datetime.now().strftime("%Y-%m-%d")})
 
         state['new_budget'] = 0
         for table_name in ["before_event_day", "on_event_day", "after_event_day"]:
