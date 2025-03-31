@@ -1,51 +1,54 @@
 vietnamese_examples = [
-    {
-        "input": "Lên kế hoạch cho một chuyến đi công ty",
-        "language": "Vietnamese",
-        "answer": "{{ \"Command\": \"Haha, có vẻ như bạn đang cần một kì nghỉ để thoát khỏi công việc! Để giúp lên kế hoạch cho chuyến đi công ty của bạn, xin hãy chọn một lựa chọn cho mỗi câu hỏi dưới đây để cung cấp thêm thông tin.\", "
-                  "\"Mục đích của chuyến đi là gì?\": [\"Chuyến đi công ty\"], "
-                  "\"Bạn mong đợi bao nhiêu khách mời?\": [\"Ít hơn 20\", \"20-50\", \"Hơn 50\"], "
-                  "\"Ngân sách của bạn cho sự kiện là bao nhiêu?\": [\"15 triệu - 30 triệu VNĐ\", \"30 triệu - 50 triệu VNĐ\", \"Hơn 50 triệu VNĐ\"], "
-                  "\"Bạn cần sự kiện được tổ chức vào lúc nào?\": [\"Tháng tới\", \"Ba tháng tới\", \"Sáu tháng tới\"], "
-                  "\"Sự kiện nên kéo dài bao lâu?\": [\"Kỳ nghỉ cuối tuần\", \"Một ngày\", \"3-4 ngày\"], "
-                  "\"Bạn muốn tổ chức sự kiện ở đâu?\": [\"Khu du lịch biển\", \"Khám phá thành phố\", \"Nghỉ dưỡng bên thiên nhiên\"], "
-                  "\"Bạn có màu sắc hoặc chủ đề cụ thể nào trong đầu không?\": [\"Thoải mái và dễ chịu\", \"Lịch sự và trang trọng\", \"Vui vẻ và lễ hội\"], "
-                  "\"Bạn muốn có những hoạt động giải trí hay hoạt động nào?\": [\"Trò chơi và cuộc thi\", \"Nhạc sống hoặc DJ\", \"Chia sẻ ảnh và kỷ niệm\"] }}"
-    }, {
-        "input": "Tổ chức một buổi picnic tại công viên Yên Sở cho công ty chúng tôi vào tuần tới với 30 triệu",
-        "language": "Vietnamese",
-        "answer": "{{ \"Command\": \"Được rồi, cho buổi picnic xây dựng đội ngũ của bộ phận tại công viên địa phương vào tuần tới với ngân sách 30 triệu VNĐ, xin hãy chọn một lựa chọn cho mỗi câu hỏi dưới đây để cung cấp thêm thông tin.\", "
-                  "\"Hãy cho tôi biết mục đích của sự kiện của bạn\": [\"Picnic xây dựng đội ngũ\"], "
-                  "\"Số lượng người tham gia?\": [\"20-30\", \"30-50\", \"Hơn 50\"], "
-                  "\"Phạm vi ngân sách của bạn?\": [\"30 triệu VNĐ\"], "
-                  "\"Bạn cần sự kiện được tổ chức vào lúc nào?\": [\"Tuần tới\"], "
-                  "\"Sự kiện của bạn nên kéo dài bao lâu?\": [\"Vài giờ\", \"Nửa ngày\", \"Cả ngày\"], "
-                  "\"Địa điểm ưa thích của bạn?\": [\"công viên Yên Sở \"], "
-                  "\"Bạn có màu sắc hoặc chủ đề nào trong đầu không?\": [\"Thoải mái và vui vẻ\", \"Lấy cảm hứng từ thiên nhiên\", \"Thương hiệu công ty\"], "
-                  "\"Bạn đang xem xét những hoạt động giải trí hoặc hoạt động nào?\": [\"Trò chơi ngoài trời\", \"Bữa trưa kiểu potluck\", \"Danh sách nhạc\"] }}"
-    }, {
-        "input": "Tổ chức tiệc sinh nhật cho con trai mình. Tôi dự định chi khoảng 10 củ, mời 15 người bạn của con và mời 1 ban nhạc về biểu diễn",
-        "language": "Vietnamese",
-        "answer": "{{ \"Command\": \"Được rồi, cho bữa tiệc sinh nhật của con trai bạn với ban nhạc sống, ngân sách 10 triệu VNĐ, và 15 vị khách, xin hãy chọn một lựa chọn cho mỗi câu hỏi dưới đây để cung cấp thêm thông tin.\", "
-                  "\"Mục đích đằng sau sự kiện?\": [\"Sinh nhật của con trai tôi\"], "
-                  "\"Số lượng người tham gia dự kiến?\": [\"15\"], "
-                  "\"Bạn dự định chi tiêu bao nhiêu?\": [\"10 triệu VNĐ\"], "
-                  "\"Kế hoạch tổ chức sự kiện khi nào?\": [\"Một tuần\", \"2 tuần\", \"Một tháng\"], "
-                  "\"Tổng thời gian của sự kiện?\": [\"Vài giờ\", \"Nửa ngày\", \"Từ chiều đến tối\"], "
-                  "\"Lựa chọn địa điểm?\": [\"Tại nhà\", \"Nhà hàng\", \"Công viên địa phương\"], "
-                  "\"Bạn có chủ đề hoặc trang trí nào trong đầu không?\": [\"Siêu anh hùng\", \"Cướp biển\", \"Khám phá Khủng long\"], "
-                  "\"Bạn đang lên kế hoạch cho giải trí cụ thể hay hoạt động nhóm nào?\": [\"Ban nhạc sống\"] }}"
-    }, {
-        "input": "Tổ chức một hội thảo doanh nghiệp với 50 khách mời vào tháng sau tập trung vào kỹ năng tiếp thị số. Ngoài ra, tôi dự định mời một chuyên gia làm diễn giả khách mời",
-        "language": "Vietnamese",
-        "answer": "{{ \"Command\": \"Được rồi, để tổ chức một hội thảo doanh nghiệp về kỹ năng tiếp thị số vào tháng tới, với 50 khách mời và một chuyên gia làm diễn giả khách mời. Xin hãy chọn một lựa chọn cho mỗi câu hỏi dưới đây để cung cấp thêm thông tin.\", "
-                  "\"Trọng tâm chính của hội thảo?\": [\"Hội thảo doanh nghiệp về kỹ năng tiếp thị số\"], "
-                  "\"Số lượng người tham gia dự kiến?\": [\"50\"], "
-                  "\"Ngân sách dự tính cho việc tổ chức?\": [\"35 triệu - 55 triệu VNĐ\", \"55 triệu - 75 triệu VNĐ\", \"hơn 75 triệu VNĐ\"], "
-                  "\"Bạn dự định tổ chức hội thảo khi nào?\": [\"Tháng tới\"], "
-                  "\"Thời lượng tối ưu cho hội thảo?\": [\"Nửa ngày\", \"Cả ngày\", \"Hai ngày\"], "
-                  "\"Địa điểm ưa thích cho sự kiện này?\": [\"Phòng hội nghị của khách sạn\", \"Trụ sở công ty\", \"Nền tảng ảo\"], "
-                  "\"Bạn có xem xét đến chủ đề hoặc bầu không khí cụ thể nào không?\": [\"Chuyên nghiệp và mịn màng\", \"Sáng tạo và công nghệ\", \"Thoải mái và tương tác\"], "
-                  "\"Bạn đã lên kế hoạch cho giải trí hay phần đặc biệt nào chưa?\": [\"Chuyên gia là diễn giả khách mời\"] }}"
-    }
+  {
+    "input": "{{\"purpose\": \"Tiệc đầy tháng cho bé\", \"guests\": \"20-40\", \"budget\": null, \"deadline\": null, \"duration\": null, \"location\": null, \"theme\": null, \"activities\": null}}",
+    "language": "Vietnamese",
+    "answer": "{{ \"Command\": \"Được rồi, hãy cùng lên kế hoạch cho tiệc đầy tháng với 20-40 khách mời. Vui lòng chọn một lựa chọn cho mỗi câu hỏi bên dưới để cung cấp thêm thông tin.\", "
+              "\"Mục đích của sự kiện là gì?\": [\"Tiệc đầy tháng cho bé\"], "
+              "\"Bạn mong đợi bao nhiêu khách mời?\": [\"20-40\"], "
+              "\"Ngân sách của bạn cho sự kiện là bao nhiêu?\": [\"Dưới 10 triệu VNĐ\", \"10-20 triệu VNĐ\", \"Hơn 20 triệu VNĐ\"], "
+              "\"Bạn cần sự kiện được tổ chức khi nào?\": [\"Tuần tới\", \"Trong vòng hai tuần\", \"Trong vòng một tháng\"], "
+              "\"Sự kiện nên kéo dài bao lâu?\": [\"Vài giờ\", \"Nửa ngày\", \"Cả ngày\"], "
+              "\"Bạn muốn tổ chức sự kiện ở đâu?\": [\"Tại nhà\", \"Nhà hàng\", \"Hội trường thuê\"], "
+              "\"Bạn có chủ đề hay phong cách trang trí cụ thể không?\": [\"Trang trí đơn giản\", \"Trang trí tông pastel\", \"Không có chủ đề cụ thể\"], "
+              "\"Bạn muốn có những hoạt động giải trí hay chương trình gì?\": [\"Các trò chơi nhỏ cho bé\", \"Góc chụp ảnh kỷ niệm\", \"Tiết mục ca nhạc\"] }}"
+  },
+  {
+    "input": "{{\"purpose\": \"Picnic công ty\", \"guests\": null, \"budget\": \"30 triệu VNĐ\", \"deadline\": \"Tuần tới\", \"duration\": null, \"location\": \"Công viên Yên Sở\", \"theme\": null, \"activities\": null}}",
+    "language": "Vietnamese",
+    "answer": "{{ \"Command\": \"Được rồi, chúng ta sẽ tổ chức một buổi picnic công ty. Vui lòng chọn một lựa chọn cho mỗi câu hỏi dưới đây để cung cấp thêm thông tin.\", "
+              "\"Mục đích của sự kiện là gì?\": [\"Picnic công ty\"], "
+              "\"Bạn mong đợi bao nhiêu khách mời?\": [\"Dưới 20\", \"20-30\", \"Hơn 30\"], "
+              "\"Ngân sách của bạn cho sự kiện là bao nhiêu?\": [\"30 triệu VNĐ\"], "
+              "\"Bạn cần sự kiện được tổ chức khi nào?\": [\"Tuần tới\"], "
+              "\"Sự kiện nên kéo dài bao lâu?\": [\"Vài giờ\", \"Nửa ngày\", \"Cả ngày\"], "
+              "\"Địa điểm bạn muốn tổ chức sự kiện?\": [\"Công viên Yên Sở\"], "
+              "\"Bạn có chủ đề trang trí cụ thể không?\": [\"Vui vẻ và năng động\", \"Gần gũi thiên nhiên\", \"Không có chủ đề cụ thể\"], "
+              "\"Bạn muốn có hoạt động giải trí hoặc hoạt động nhóm nào?\": [\"Trò chơi tập thể ngoài trời\", \"Khu ẩm thực đơn giản\", \"Chương trình âm nhạc nhẹ\"] }}"
+  },
+  {
+    "input": "{{\"purpose\": \"Tiệc sinh nhật cho con trai\", \"guests\": \"15\", \"budget\": \"10 triệu VNĐ\", \"deadline\": null, \"duration\": null, \"location\": null, \"theme\": null, \"activities\": \"Ban nhạc sống\"}}",
+    "language": "Vietnamese",
+    "answer": "{{ \"Command\": \"Được rồi, chúng ta sẽ tổ chức tiệc sinh nhật cho con trai bạn với 15 khách và ban nhạc sống. Vui lòng chọn một lựa chọn cho mỗi câu hỏi dưới đây để cung cấp thêm thông tin.\", "
+              "\"Mục đích tổ chức sự kiện?\": [\"Tiệc sinh nhật cho con trai\"], "
+              "\"Số lượng khách mời?\": [\"15\"], "
+              "\"Ngân sách của bạn là bao nhiêu?\": [\"10 triệu VNĐ\"], "
+              "\"Khi nào bạn cần sự kiện diễn ra?\": [\"Trong vòng một tuần\", \"Trong vòng hai tuần\", \"Trong vòng một tháng\"], "
+              "\"Sự kiện nên kéo dài bao lâu?\": [\"Vài giờ\", \"Nửa ngày\", \"Từ chiều đến tối\"], "
+              "\"Địa điểm tổ chức?\": [\"Tại nhà\", \"Nhà hàng\", \"Sảnh tiệc thuê\"], "
+              "\"Bạn có ý tưởng trang trí hay chủ đề cụ thể không?\": [\"Siêu anh hùng\", \"Hoạt hình vui nhộn\", \"Không có chủ đề cụ thể\"], "
+              "\"Hoạt động hoặc tiết mục đặc biệt?\": [\"Ban nhạc sống\"] }}"
+  },
+  {
+    "input": "{{\"purpose\": \"Hội thảo doanh nghiệp về kỹ năng tiếp thị số\", \"guests\": \"50\", \"budget\": null, \"deadline\": \"Tháng tới\", \"duration\": null, \"location\": null, \"theme\": null, \"activities\": \"Chuyên gia làm diễn giả khách mời\"}}",
+    "language": "Vietnamese",
+    "answer": "{{ \"Command\": \"Được rồi, chúng ta sẽ tổ chức hội thảo doanh nghiệp về kỹ năng tiếp thị số với 50 khách mời vào tháng tới. Vui lòng chọn một lựa chọn cho mỗi câu hỏi bên dưới để cung cấp thêm thông tin.\", "
+              "\"Mục đích chính của hội thảo?\": [\"Hội thảo doanh nghiệp về kỹ năng tiếp thị số\"], "
+              "\"Số lượng khách mời dự kiến?\": [\"50\"], "
+              "\"Ngân sách dự tính cho hội thảo?\": [\"35 - 55 triệu VNĐ\", \"55 - 75 triệu VNĐ\", \"Hơn 75 triệu VNĐ\"], "
+              "\"Thời gian tổ chức?\": [\"Tháng tới\"], "
+              "\"Hội thảo nên kéo dài bao lâu?\": [\"Nửa ngày\", \"Cả ngày\", \"Hai ngày\"], "
+              "\"Địa điểm tổ chức hội thảo?\": [\"Phòng hội nghị khách sạn\", \"Trụ sở công ty\", \"Nền tảng trực tuyến\"], "
+              "\"Chủ đề hoặc phong cách tổng thể?\": [\"Chuyên nghiệp và trang trọng\", \"Sáng tạo và hiện đại\", \"Thân thiện và tương tác\"], "
+              "\"Hoạt động hoặc phân đoạn đặc biệt?\": [\"Chuyên gia làm diễn giả khách mời\"] }}"
+  }
 ]

@@ -24,7 +24,7 @@ class EventSuggester:
             create_example_selector(event_extraction_examples, OpenAIEmbeddings, FAISS, 2, ["input"]),
             "User: {input}\nLanguage: {language}\nAI: {answer}",
             EVENT_SUGGESTION_PROMPT,
-            "User: {input}\nPlease respond in {language}\nAI:",
+            "Extracted event details: {input}\nPlease respond in {language}\nAI:",
             ["input"]
         )
 
@@ -83,11 +83,17 @@ class EventSuggester:
     def extract_event_details(self, state: PlannerState) -> PlannerState:
         prompt = ChatPromptTemplate.from_messages([
             SystemMessagePromptTemplate.from_template(EVENT_EXTRACTION_PROMPT),
-            HumanMessagePromptTemplate.from_template("{user_input}")
+            HumanMessagePromptTemplate.from_template(
+                "Extract exact details from: {user_input}\n"
+                "Do not modify any specified values."
+            )
         ])
-        extraction_chain = prompt | self.llm.with_structured_output(EventDetails)
+
+        extraction_chain = prompt | self.llm.with_structured_output(EventDetails, method="function_calling")
         response = extraction_chain.invoke({"user_input": state.user_input})
+
         state.event_details = dict(response)
+        print("Extracted event details:", state.event_details)
 
         return state
 

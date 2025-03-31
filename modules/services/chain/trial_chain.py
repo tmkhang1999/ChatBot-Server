@@ -9,7 +9,7 @@ class TrialConversationChain(StreamingConversationChain):
     def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 0.7):
         super().__init__(model_name, temperature)
         self.thread_ids = set()
-        self.event_suggester = EventSuggester(MODEL_NAME=model_name, TEMPERATURE=temperature)
+        self.event_suggester = EventSuggester(MODEL_NAME=model_name, TEMPERATURE=0.3)
         self.event_planner = EventPlanner(MODEL_NAME=model_name, TEMPERATURE=temperature)
         self.budget_categorizer = BudgetCategorizer(MODEL_NAME=model_name, TEMPERATURE=temperature)
         self.dependency_detector = DependencyDetector(MODEL_NAME=model_name, TEMPERATURE=temperature)

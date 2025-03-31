@@ -1,7 +1,7 @@
 from typing import Dict, Any
 from typing import Literal
-
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 
 class PlannerState(BaseModel):
@@ -20,11 +20,11 @@ class QueryType(BaseModel):
 
 
 class EventDetails(BaseModel):
-    purpose: str | None = Field(description="The main reason for the event, including relationships if mentioned")
-    guests: int | None = Field(description="Estimated number of attendees")
-    budget: str | None = Field(description="Estimated or stated budget")
-    deadline: str | None = Field(description="When the event needs to be organized by")
-    duration: str | None = Field(description="How long the event is expected to last")
-    location: str | None = Field(description="Where the event will take place")
-    theme: str | None = Field(description="Any specific theme or colors for decorations/styling")
-    activities: str | None = Field(description="Planned activities or entertainment")
+    purpose: str | None = Field(description="The exact purpose of the event")
+    guests: str | None = Field(description="Exact number or range of guests")
+    budget: str | None = Field(description="Exact budget amount or range")
+    deadline: str | None = Field(description="Exact date or timing requirement until deadline")
+    duration: str | None = Field(description="Exact duration of the event")
+    location: str | None = Field(description="Exact location specified")
+    theme: str | None = Field(description="Exact theme or styling specified")
+    activities: str | None = Field(description="Exact activities or entertainment specified")
