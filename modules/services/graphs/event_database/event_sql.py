@@ -208,8 +208,12 @@ class EventChatbot:
             reasoning=dict(gen_response).get("reasoning")
         )
         state["current_query"] = query
-        self.logger.info(query)
-        print(query)
+
+        self.logger.info(f"Generated query statement: {dict(gen_response).get('statement')}")
+        self.logger.info(f"Query reasoning: {dict(gen_response).get('reasoning')}")
+
+        print(f"Generated query statement: {dict(gen_response).get('statement')}")
+        print(f"Query reasoning: {dict(gen_response).get('reasoning')}")
         return state
 
     def execute_query(self, state: SQLState) -> SQLState:
@@ -272,16 +276,22 @@ class EventChatbot:
             "table_names": self.database.get_usable_table_names()
         })
 
-        relevant_tables = dict(schema_relevance).get("relevant_tables")
+        relevant_tables = dict(schema_relevance).get("relevant_tables", [])
+
+        # Use default tables if no relevant tables found
         if not relevant_tables:
-            self.logger.error(f"No relevant tables found for question: {question}")
-            state["error_message"] = "No relevant tables found for the question."
-            state["tables_info"] = None
-            return state
+            self.logger.info(f"No specific tables identified for question: {question}, using default tables")
+            # Use planz_tasks as default for task-related queries
+            if state["question_type"] == QuestionType.TASK_REQUEST:
+                relevant_tables = ["planz_tasks"]
+                state["tables_info"] = self.database.get_table_info(relevant_tables)
+            else:
+                state["error_message"] = "No relevant tables found for the question."
+                state["tables_info"] = None
         else:
             state["tables_info"] = self.database.get_table_info(relevant_tables)
 
-            return state
+        return state
 
     def generate_answer(self, state: SQLState) -> SQLState:
         """Generate final answer based on query results and update conversation history."""
