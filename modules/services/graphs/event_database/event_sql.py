@@ -94,12 +94,22 @@ class EventChatbot:
         logger = logging.getLogger(__name__)
         logger.setLevel(logging.INFO)
 
-        file_handler = logging.FileHandler(log_file)
+        # Add log rotation
+        from logging.handlers import RotatingFileHandler
+        file_handler = RotatingFileHandler(
+            log_file,
+            maxBytes=10 * 1024 * 1024,  # 10MB
+            backupCount=5
+        )
         file_handler.setLevel(logging.INFO)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
 
+        # Clear existing handlers to avoid duplicates
+        if logger.handlers:
+            logger.handlers.clear()
+
+        logger.addHandler(file_handler)
         return logger
 
     def classify(self, state: SQLState) -> SQLState:
@@ -156,13 +166,15 @@ class EventChatbot:
         if not current_query:
             if question_type == QuestionType.TASK_REQUEST:
                 list_names = self.database.run(
-                    f"SELECT DISTINCT u.first_name, u.last_name FROM planz_users u "
-                    f"JOIN planz_tasks t ON u.id = t.assigned_to WHERE t.project_id = {project_id}"
+                    "SELECT DISTINCT u.first_name, u.last_name FROM planz_users u "
+                    "JOIN planz_tasks t ON u.id = t.assigned_to WHERE t.project_id = %s",
+                    (project_id,)
                 )
                 instructions = GENERATE_PROMPT + TASK_PROMPT.format(list_names=list_names)
             elif question_type == QuestionType.BUDGET_REQUEST:
                 budget_categories = self.database.run(
-                    f"SELECT title FROM planz_budgets WHERE project_id = {project_id} ORDER BY title;"
+                    "SELECT title FROM planz_budgets WHERE project_id = %s ORDER BY title;",
+                    (project_id,)
                 )
                 instructions = GENERATE_PROMPT + BUDGET_PROMPT.format(budget_categories=budget_categories)
             else:
@@ -171,6 +183,14 @@ class EventChatbot:
             instructions = instructions.format(table_names=table_names) + EXAMPLE_PROMPT
         else:
             info = state["tables_info"].replace("{", "{{").replace("}", "}}")
+
+            # import re
+            # def escape_format_braces(text: str) -> str:
+            #     """Safely escape curly braces for string formatting."""
+            #     if text is None:
+            #         return ""
+            #     return re.sub(r"(\{|\})", r"\1\1", text)
+
             error_info = str(current_query.error_info).replace("{", "{{").replace("}", "}}")
             instructions = FIX_PROMPT.format(
                 info=info,
@@ -216,6 +236,19 @@ class EventChatbot:
         print(f"Query reasoning: {dict(gen_response).get('reasoning')}")
         return state
 
+    def is_read_only_query(query_text: str) -> bool:
+        """Check if a query is read-only (SELECT only)."""
+        # Convert to uppercase for case-insensitive comparison
+        query_upper = query_text.upper().strip()
+        # Check if query starts with SELECT and doesn't contain DML keywords
+        forbidden_keywords = ["INSERT", "UPDATE", "DELETE", "DROP", "ALTER", "CREATE", "TRUNCATE", "GRANT", "REVOKE"]
+        if not query_upper.startswith("SELECT"):
+            return False
+        for keyword in forbidden_keywords:
+            if keyword in query_upper:
+                return False
+        return True
+
     def execute_query(self, state: SQLState) -> SQLState:
         """Execute the generated SQL query."""
         self.logger.info("Executing query")
@@ -233,6 +266,14 @@ class EventChatbot:
             query.is_valid = True
             return state
 
+        # Add query validation
+        if not self.is_read_only_query(query.statement):
+            query.error = "Only SELECT queries are allowed"
+            query.is_valid = False
+            state["error_message"] = "Security violation: Only read-only queries are permitted"
+            state["attempts"] += 1
+            return state
+
         try:
             query.result = self.database._execute(query.statement)
             query.is_valid = True
@@ -244,6 +285,7 @@ class EventChatbot:
             query.error = str(e)
             query.is_valid = False
             self.logger.error(f"Query execution failed: {e}")
+            state["error_message"] = f"Error executing query: {str(e)}"
 
             # Increment the attempts after a failed execution
             state["attempts"] = attempts + 1
